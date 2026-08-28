@@ -408,7 +408,7 @@ Object.entries(SPORTS).forEach(([k,v]) => {
   const b = document.createElement('button');
   b.className = 'chip'; b.dataset.k = k;
   b.innerHTML = `<span class="dot" style="background:${v.color}"></span>${v.label}`;
-  b.onclick = () => { state.sports.has(k) ? state.sports.delete(k) : state.sports.add(k); paintSportChips(); render(); };
+  b.onclick = () => { state.sports.has(k) ? state.sports.delete(k) : state.sports.add(k); state.focus = null; paintSportChips(); render(); };
   schips.appendChild(b);
 });
 function paintSportChips(){
@@ -423,10 +423,11 @@ function paintSportChips(){
 const usedIso = [...new Set(EVENTS.flatMap(e => e.iso))].sort((a,b) => cname(a).localeCompare(cname(b),'es'));
 const csel = document.getElementById('csel');
 usedIso.forEach(iso => { const o = document.createElement('option'); o.value = iso; o.textContent = cname(iso); csel.appendChild(o); });
-csel.onchange = () => { if (csel.value) { state.countries.add(csel.value); csel.value = ''; render(); } };
+csel.onchange = () => { if (csel.value) { state.countries.add(csel.value); state.focus = null; csel.value = ''; render(); } };
 
 document.getElementById('from').onchange = e => {
   state.from = e.target.value || null;
+  state.focus = null;
   const toEl = document.getElementById('to');
   toEl.min = state.from || '2026-08-01';
   if (state.from) {
@@ -441,7 +442,7 @@ document.getElementById('from').onchange = e => {
   }
   render();
 };
-document.getElementById('to').onchange = e => { state.to = e.target.value || null; render(); };
+document.getElementById('to').onchange = e => { state.to = e.target.value || null; state.focus = null; render(); };
 document.getElementById('reset').onclick = () => {
   state.from = state.to = state.focus = null; state.sports.clear(); state.countries.clear(); state.sel.clear();
   document.getElementById('from').value = ''; document.getElementById('to').value = '';
@@ -514,9 +515,11 @@ Object.entries(COUNTRIES).forEach(([iso,[,id]]) => { if (id) isoById[id] = iso; 
 function drawLand(){
   gLand.selectAll('path').data(land, d => d.id).join('path')
     .attr('class','land').attr('d', path)
+    .style('cursor', d => { const iso = isoById[+d.id]; return (iso && usedIso.includes(iso)) ? 'pointer' : 'default'; })
     .on('click', (ev,d) => {
       const iso = isoById[+d.id]; if (!iso || !usedIso.includes(iso)) return;
       state.countries.has(iso) ? state.countries.delete(iso) : state.countries.add(iso);
+      state.focus = null;
       render();
     })
     .on('mousemove', (ev,d) => {
