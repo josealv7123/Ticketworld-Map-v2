@@ -177,7 +177,7 @@
         <button class="btn" id="qbtn" disabled="">Pedir cotización</button>
       </div>
       <div class="request">
-        <a href="#" id="reqlink">¿No encuentras lo que buscas? Solicítalo aquí</a>
+        <a href="#" id="reqlink" target="_top">¿No encuentras lo que buscas? Solicítalo aquí</a>
       </div>
     </aside>
   </main>
@@ -645,6 +645,7 @@ document.getElementById('qbtn').onclick = () => {
   if (url.length < 1800) {
     const a = document.createElement('a');
     a.href = url;
+    a.target = '_top';
     a.rel = 'noopener';
     document.body.appendChild(a);
     a.click();
@@ -658,6 +659,7 @@ document.getElementById('qbtn').onclick = () => {
   }).catch(() => {
     const a = document.createElement('a');
     a.href = 'mailto:jose.cuervo@ticketworldonline.com?subject=' + encodeURIComponent('Solicitud de cotización — ' + evs.length + ' eventos');
+    a.target = '_top';
     document.body.appendChild(a);
     a.click();
     a.remove();
