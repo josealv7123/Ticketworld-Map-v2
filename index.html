@@ -639,18 +639,29 @@ function mailtoSolicitud(){
   return `mailto:jose.cuervo@ticketworldonline.com?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
 }
 document.getElementById('reqlink').setAttribute('href', mailtoSolicitud());
-document.getElementById('qbtn').onclick = async () => {
+document.getElementById('qbtn').onclick = () => {
   if (!state.sel.size) return;
   const url = mailtoCotizacion();
-  if (url.length < 1800) { window.location.href = url; return; }
+  if (url.length < 1800) {
+    const a = document.createElement('a');
+    a.href = url;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    return;
+  }
   const evs = EVENTS.filter(e => state.sel.has(e.id));
   const txt = evs.map(e => `- ${e.name} · ${fmt(e)} · ${e.city}`).join('\n');
-  try {
-    await navigator.clipboard.writeText(txt);
+  navigator.clipboard.writeText(txt).then(() => {
     alert('Has seleccionado ' + evs.length + ' eventos: demasiados para abrir el correo automáticamente.\n\nLa lista se ha copiado al portapapeles. Pégala en un correo a jose.cuervo@ticketworldonline.com.');
-  } catch {
-    window.location.href = 'mailto:jose.cuervo@ticketworldonline.com?subject=' + encodeURIComponent('Solicitud de cotización — ' + evs.length + ' eventos');
-  }
+  }).catch(() => {
+    const a = document.createElement('a');
+    a.href = 'mailto:jose.cuervo@ticketworldonline.com?subject=' + encodeURIComponent('Solicitud de cotización — ' + evs.length + ' eventos');
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  });
 };
 
 function writeUrl(){
