@@ -638,7 +638,7 @@ function mailtoSolicitud(){
   const cuerpo = `Hola José,\n\nEstoy buscando un evento que no encuentro en el mapa:\n\n- Evento / competición: \n- Fechas aproximadas: \n- Ciudad / país: \n\nDatos de la solicitud:\n\n- Agencia: \n- Persona de contacto: \n- Teléfono: \n- Número de asistentes: \n- Fechas / sesiones que interesan: \n- Comentarios: \n\nGracias,\n`;
   return `mailto:jose.cuervo@ticketworldonline.com?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
 }
-document.getElementById('reqlink').onclick = ev => { ev.preventDefault(); window.location.href = mailtoSolicitud(); };
+document.getElementById('reqlink').setAttribute('href', mailtoSolicitud());
 document.getElementById('qbtn').onclick = async () => {
   if (!state.sel.size) return;
   const url = mailtoCotizacion();
